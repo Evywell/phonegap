@@ -35,20 +35,47 @@ $$(document).on('deviceready', function() {
     console.log("Device is ready!");
 });
 
-$$.get('https://jsonplaceholder.typicode.com/posts', null, function (data, status, xhr) {
-    var parsedData = JSON.parse(data);
-    var divs = "";
-    for (var i = 0; i < parsedData.length; i++) {
-        var line = parsedData[i];
-        var div = '<div class="content-block"><div class="content-block-title">' + line.title + '</div><div' +
-            ' class="content-block-inner">' + line.body + '</div></div>';
-        divs += div;
-    }
-    $$('#content-ajax').append(divs);
-}, function(xhr, status) {
-    console.error("Ajax error ", xhr, status);
+var ajaxGETRequest = function (url, callback) {
+    $$.get(url, null, function (data, status, xhr) {
+        callback(data, status, xhr);
+    }, function (xhr, status) {
+        console.error("Ajax error", xhr, status);
+    })
+}
+
+var loadposts = function () {
+    ajaxGETRequest('https://jsonplaceholder.typicode.com/posts', function (data, status, xhr) {
+        var parsedData = JSON.parse(data);
+        var divs = "";
+        for (var i = 0; i < parsedData.length; i++) {
+            var line = parsedData[i];
+            var div = '<div class="content-block"><div class="content-block-title"><a href="view.html?id=' + line.id + '">' + line.title + '</a></div><div' +
+                ' class="content-block-inner">' + line.body + '</div></div>';
+            divs += div;
+        }
+        $$('#content-ajax').append(divs);
+    })
+
+}
+
+var loadPost = function(id) {
+    ajaxGETRequest('https://jsonplaceholder.typicode.com/posts/' + id, function (data, status, xhr) {
+        data = JSON.parse(data);
+        $$('#view-title').text(data.title);
+        $$('#view-content').text(data.body);
+    })
+}
+
+loadposts();
+
+// load posts
+myApp.onPageInit('index', function (page) {
+    loadposts();
 })
 
+myApp.onPageInit('view', function (page) {
+   loadPost(page.query.id);
+});
 
 // Now we need to run the code that will be executed only for About page.
 
