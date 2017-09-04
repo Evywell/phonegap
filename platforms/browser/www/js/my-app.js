@@ -35,6 +35,20 @@ $$(document).on('deviceready', function() {
     console.log("Device is ready!");
 });
 
+$$.get('https://jsonplaceholder.typicode.com/posts', null, function (data, status, xhr) {
+    var parsedData = JSON.parse(data);
+    var divs = "";
+    for (var i = 0; i < parsedData.length; i++) {
+        var line = parsedData[i];
+        var div = '<div class="content-block"><div class="content-block-title">' + line.title + '</div><div' +
+            ' class="content-block-inner">' + line.body + '</div></div>';
+        divs += div;
+    }
+    $$('#content-ajax').append(divs);
+}, function(xhr, status) {
+    console.error("Ajax error ", xhr, status);
+})
+
 
 // Now we need to run the code that will be executed only for About page.
 
@@ -50,12 +64,16 @@ $$(document).on('pageInit', function (e) {
 
     if (page.name === 'about') {
         // Following code will be executed for page with data-page attribute equal to "about"
-        myApp.alert('Here comes About page');
+        // myApp.alert('Here comes About page');
     }
 })
 
 // Option 2. Using live 'pageInit' event handlers for each page
 $$(document).on('pageInit', '.page[data-page="about"]', function (e) {
     // Following code will be executed for page with data-page attribute equal to "about"
-    myApp.alert('Here comes About page');
+    // myApp.alert('Here comes About page');
+})
+
+myApp.onPageInit('test', function (page) {
+    myApp.alert("Bienvenue sur la page de test");
 })
